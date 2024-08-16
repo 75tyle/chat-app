@@ -29,6 +29,16 @@ io.on('connection', (socket) => {
         socket.broadcast.emit('message', {nickname: nickname, text: message})
     });
 
+    // Handle typing event
+    socket.on('typing', (data) => {
+        socket.broadcast.emit('typing', data.nickname);
+    });
+
+    // Handle stop typing event
+    socket.on('stop-typing', () => {
+        socket.broadcast.emit('stop-typing');
+    });
+
     // broadcast when a user is disconnected
     socket.on('disconnect', ()=>{
         const nickname = users[socket.id];
