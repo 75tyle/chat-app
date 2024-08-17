@@ -15,8 +15,9 @@ io.on('connection', (socket) => {
     
     // Handle nickname setting
     socket.on('set-nickname', (nickname) =>{
-        users[socket.id] = nickname;
+        users[socket.id] = nickname;   // Store the user's nickname
         console.log(`${nickname} connected`);
+        io.emit('online-users', Object.values(users));  // Send the updated list of online users to everyone
         socket.broadcast.emit('message', {nickname: 'Server', text: `${nickname} has connected`});
     })
 
@@ -44,10 +45,9 @@ io.on('connection', (socket) => {
         const nickname = users[socket.id];
         if(nickname){
             socket.broadcast.emit('message', {nickname: 'Server', text: `${nickname} has disconnected`});
-            delete users[socket.id];
+            delete users[socket.id];    // Remove the users from the list 
+            io.emit('online-users', Object.values(users));  // Send the update list of online users to everyone
         }
-        console.log(`${nickname} diconnected`);
-        
     });
 })
 
