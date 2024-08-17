@@ -17,7 +17,8 @@ io.on('connection', (socket) => {
     socket.on('set-nickname', (nickname) =>{
         users[socket.id] = nickname;   // Store the user's nickname
         console.log(`${nickname} connected`);
-        io.emit('online-users', Object.values(users));  // Send the updated list of online users to everyone
+        updateOnlineUsers();
+        // io.emit('online-users', Object.values(users));  // Send the updated list of online users to everyone
         socket.broadcast.emit('message', {nickname: 'Server', text: `${nickname} has connected`});
     })
 
@@ -46,9 +47,18 @@ io.on('connection', (socket) => {
         if(nickname){
             socket.broadcast.emit('message', {nickname: 'Server', text: `${nickname} has disconnected`});
             delete users[socket.id];    // Remove the users from the list 
-            io.emit('online-users', Object.values(users));  // Send the update list of online users to everyone
+            updateOnlineUsers();
+            // io.emit('online-users', Object.values(users));  // Send the update list of online users to everyone
         }
     });
+
+    // update all clients with the current number of online users
+    function updateOnlineUsers(){
+        io.emit('online-users',{
+            users: Object.values(users),
+            count: Object.keys(users).length
+        });
+    }
 })
 
 app.use(express.static('public'));

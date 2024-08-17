@@ -97,7 +97,7 @@
     <div class="heading"><h1>Chatting</h1></div>
     <ul id="messages"></ul>
     <p id="typing"></p>
-    <div id="online-users">Online Users:</div>
+    <div id="online-users">Online Users <span id="user-count">0</span></div>
     <form id="form" action="">
       <input
         id="input"
@@ -116,6 +116,8 @@
       const input = document.getElementById("input");
       const typing = document.getElementById("typing");
       const onlineUsers = document.getElementById("online-users");
+      const userCount = document.getElementById('user-count');
+      
 
       let typingTimeout;
       let nickname = "";
@@ -170,8 +172,10 @@
         typing.textContent = "";
       });
 
-      socket.on("online-users", (users) => {
-        onlineUsers.innerHTML = `Online Users:<br>${users.join("<br>")}`;
+      //Update the number of online users
+      socket.on("online-users", (data) => {
+        userCount.textContent = data.count;
+        onlineUsers.innerHTML = `Online Users(${data.count})<br>${users.join("<br>")}`;
       });
 
       // Check the user is near the bottom of the message list
